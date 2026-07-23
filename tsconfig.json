@@ -1,0 +1,34 @@
+{
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "drizzle.config.ts",
+    "worker-configuration.d.ts"
+  ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true,
+    "types": ["vite/client", "./worker-configuration.d.ts"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "lorne",
+  "main": "src/server.ts",
+  "compatibility_date": "2026-07-23",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "upload_source_maps": true,
+  "observability": {
+    "enabled": true,
+    "logs": { "head_sampling_rate": 1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.05 }
+  },
+  "vars": {
+    "APP_ENV": "development",
+    "BETTER_AUTH_URL": "http://localhost:3000",
+    "OPENAI_TEXT_MODEL": "gpt-5.6-sol",
+    "OPENAI_IMAGE_MODEL": "gpt-image-2",
+    "OPENAI_TEXT_REASONING_EFFORT": "low",
+    "DEFAULT_GENERATION_CARD_COUNT": "30",
+    "MAX_GENERATION_CARD_COUNT": "50",
+    "MAX_ACTIVE_GENERATION_JOBS": "2",
+    "CREDENTIAL_KEY_ACTIVE_VERSION": "1",
+    "LOG_LEVEL": "info"
+  },
+  "secrets": {
+    "required": ["BETTER_AUTH_SECRET", "OPENAI_CREDENTIAL_ENCRYPTION_KEY_V1"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lorne-local",
+      "migrations_dir": "./migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "CARD_IMAGES",
+      "bucket_name": "lorne-card-images-local"
+    }
+  ],
+  "workflows": [
+    {
+      "binding": "CARD_GENERATION_WORKFLOW",
+      "name": "lorne-card-generation-local",
+      "class_name": "CardGenerationWorkflow"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "GENERATION_RATE_LIMITER",
+      "namespace_id": "1001001",
+      "simple": { "limit": 2, "period": 60 }
+    },
+    {
+      "name": "CREDENTIAL_RATE_LIMITER",
+      "namespace_id": "1001002",
+      "simple": { "limit": 5, "period": 60 }
+    }
+  ],
+  "env": {
+    "staging": {
+      "name": "lorne-staging",
+      "vars": {
+        "APP_ENV": "staging",
+        "BETTER_AUTH_URL": "https://staging.example.com",
+        "OPENAI_TEXT_MODEL": "gpt-5.6-sol",
+        "OPENAI_IMAGE_MODEL": "gpt-image-2",
+        "OPENAI_TEXT_REASONING_EFFORT": "low",
+        "DEFAULT_GENERATION_CARD_COUNT": "30",
+        "MAX_GENERATION_CARD_COUNT": "50",
+        "MAX_ACTIVE_GENERATION_JOBS": "2",
+        "CREDENTIAL_KEY_ACTIVE_VERSION": "1",
+        "LOG_LEVEL": "info"
+      },
+      "secrets": {
+        "required": ["BETTER_AUTH_SECRET", "OPENAI_CREDENTIAL_ENCRYPTION_KEY_V1"]
+      },
+      "d1_databases": [{ "binding": "DB", "database_name": "lorne-staging", "migrations_dir": "./migrations" }],
+      "r2_buckets": [{ "binding": "CARD_IMAGES", "bucket_name": "lorne-card-images-staging" }],
+      "workflows": [
+        { "binding": "CARD_GENERATION_WORKFLOW", "name": "lorne-card-generation-staging", "class_name": "CardGenerationWorkflow" }
+      ],
+      "ratelimits": [
+        { "name": "GENERATION_RATE_LIMITER", "namespace_id": "1002001", "simple": { "limit": 2, "period": 60 } },
+        { "name": "CREDENTIAL_RATE_LIMITER", "namespace_id": "1002002", "simple": { "limit": 5, "period": 60 } }
+      ]
+    },
+    "production": {
+      "name": "lorne-production",
+      "vars": {
+        "APP_ENV": "production",
+        "BETTER_AUTH_URL": "https://learn.example.com",
+        "OPENAI_TEXT_MODEL": "gpt-5.6-sol",
+        "OPENAI_IMAGE_MODEL": "gpt-image-2",
+        "OPENAI_TEXT_REASONING_EFFORT": "low",
+        "DEFAULT_GENERATION_CARD_COUNT": "30",
+        "MAX_GENERATION_CARD_COUNT": "50",
+        "MAX_ACTIVE_GENERATION_JOBS": "2",
+        "CREDENTIAL_KEY_ACTIVE_VERSION": "1",
+        "LOG_LEVEL": "info"
+      },
+      "secrets": {
+        "required": ["BETTER_AUTH_SECRET", "OPENAI_CREDENTIAL_ENCRYPTION_KEY_V1"]
+      },
+      "d1_databases": [{ "binding": "DB", "database_name": "lorne-production", "migrations_dir": "./migrations" }],
+      "r2_buckets": [{ "binding": "CARD_IMAGES", "bucket_name": "lorne-card-images-production" }],
+      "workflows": [
+        { "binding": "CARD_GENERATION_WORKFLOW", "name": "lorne-card-generation-production", "class_name": "CardGenerationWorkflow" }
+      ],
+      "ratelimits": [
+        { "name": "GENERATION_RATE_LIMITER", "namespace_id": "1003001", "simple": { "limit": 2, "period": 60 } },
+        { "name": "CREDENTIAL_RATE_LIMITER", "namespace_id": "1003002", "simple": { "limit": 5, "period": 60 } }
+      ]
+    }
+  }
+}

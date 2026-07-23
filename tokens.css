@@ -1,0 +1,79 @@
+/* Hallmark tokens · Plume warmth with a low-chroma indigo anchor. */
+:root {
+  --color-paper: oklch(95.6% 0.014 80);
+  --color-paper-deep: oklch(91.8% 0.023 78);
+  --color-surface: oklch(99% 0.008 80);
+  --color-surface-raised: oklch(98.7% 0.009 80);
+  --color-surface-translucent: oklch(99% 0.008 80 / 0.58);
+  --color-ink: oklch(25% 0.02 290);
+  --color-ink-soft: oklch(50% 0.027 290);
+  --color-ink-faint: oklch(52% 0.02 290);
+  --color-line: oklch(84% 0.019 75);
+  --color-line-strong: oklch(74% 0.026 75);
+  --color-indigo: oklch(50% 0.15 282);
+  --color-indigo-dark: oklch(40% 0.14 282);
+  --color-indigo-soft: oklch(91% 0.035 282);
+  --color-indigo-line: oklch(74% 0.06 282);
+  --color-accent-ink: oklch(98% 0.01 80);
+  --color-coral: oklch(60% 0.135 35);
+  --color-coral-soft: oklch(91% 0.045 35);
+  --color-green: oklch(48% 0.09 155);
+  --color-green-soft: oklch(91% 0.025 155);
+  --color-green-line: oklch(76% 0.045 155);
+  --color-amber: oklch(45% 0.1 65);
+  --color-amber-soft: oklch(91% 0.04 65);
+  --color-danger: oklch(48% 0.12 30);
+  --color-danger-soft: oklch(93% 0.035 30);
+  --color-focus: oklch(40% 0.14 282);
+  --color-shadow-ink: oklch(25% 0.02 290 / 0.12);
+  --color-shadow-warm: oklch(35% 0.025 70 / 0.09);
+  --color-progress-track: oklch(99% 0.008 80 / 0.42);
+  --shadow-small: 0 2px 0 oklch(25% 0.02 290 / 0.08), 0 8px 24px oklch(35% 0.025 70 / 0.06);
+  --shadow-card: 0 3px 0 oklch(25% 0.02 290 / 0.09), 0 20px 50px var(--color-shadow-warm);
+
+  --font-display: "Bricolage Grotesque Variable", "Arial Narrow", sans-serif;
+  --font-body: "Geist Variable", system-ui, sans-serif;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 8rem;
+  --space-5xl: 12rem;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 2rem;
+  --text-display-s: 3rem;
+  --text-display: 5rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 120ms;
+  --dur-medium: 220ms;
+
+  --rule-thin: 1px;
+  --rule-focus: 2px;
+  --rule-bold: 3px;
+  --radius-2xs: 0.25rem;
+  --radius-xs: 0.5rem;
+  --radius-small: 0.75rem;
+  --radius-medium: 1rem;
+  --radius-large: 1.5rem;
+  --radius-card: 1.5rem 1.5rem 1.5rem 0.375rem;
+  --radius-mark: 0.5rem 0.5rem 0.5rem 0.125rem;
+  --radius-organic: 50% 48% 52% 46%;
+  --radius-round: 50%;
+  --radius-pill: 999rem;
+
+  --rail-width: 13.5rem;
+  --content-width: 72rem;
+}

@@ -1,0 +1,16 @@
+{
+  "date": "2026-07-23",
+  "scope": "application",
+  "font_stack": "Bricolage Grotesque Variable for display and Geist Variable for body copy",
+  "palette": "OKLCH semantic tokens with warm paper surfaces, low-chroma indigo, and restrained coral",
+  "motion": "Transform and opacity transitions only, with a complete reduced-motion cut",
+  "spacing": "Named 4-point semantic spacing scale",
+  "framework": "TanStack Start, React, and Cloudflare Workers",
+  "preserved": ["Mobile-first Quick Study path", "Four explicit FSRS recall controls", "Private authenticated application shell"],
+  "introduced": [
+    "Workbench split sign-in macrostructure",
+    "Live flashcard proof on the sign-in screen",
+    "Fixed study rail with mobile bottom navigation",
+    "Tactile asymmetric card geometry"
+  ]
+}

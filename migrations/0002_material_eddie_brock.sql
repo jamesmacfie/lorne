@@ -1,0 +1,2 @@
+ALTER TABLE `generation_jobs` ADD `active_slot` integer;--> statement-breakpoint
+CREATE UNIQUE INDEX `generation_jobs_owner_active_slot_uidx` ON `generation_jobs` (`user_id`,`active_slot`) WHERE "generation_jobs"."status" in ('queued', 'running');

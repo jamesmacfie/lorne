@@ -1,0 +1,4 @@
+# Copy to .dev.vars. Generate real values; never commit the copy.
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=replace-with-at-least-32-random-bytes
+OPENAI_CREDENTIAL_ENCRYPTION_KEY_V1=replace-with-base64-encoded-32-byte-key

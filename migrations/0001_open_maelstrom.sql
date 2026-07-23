@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `generation_jobs_one_active_topic_uidx` ON `generation_jobs` (`topic_id`) WHERE "generation_jobs"."status" in ('queued', 'running');
