@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
 
 const args = process.argv.slice(2);
+if (args[0] === "--") args.shift();
 const email = args[0]?.trim().toLowerCase();
 const envIndex = args.indexOf("--env");
 const targetEnv = envIndex >= 0 ? args[envIndex + 1] : undefined;

@@ -14,6 +14,7 @@
     "APP_ENV": "development",
     "BETTER_AUTH_URL": "http://localhost:3000",
     "OPENAI_TEXT_MODEL": "gpt-5.6-sol",
+    "OPENAI_CHAT_MODEL": "gpt-5.6-luna",
     "OPENAI_IMAGE_MODEL": "gpt-image-2",
     "OPENAI_TEXT_REASONING_EFFORT": "low",
     "DEFAULT_GENERATION_CARD_COUNT": "30",
@@ -55,6 +56,11 @@
       "name": "CREDENTIAL_RATE_LIMITER",
       "namespace_id": "1001002",
       "simple": { "limit": 5, "period": 60 }
+    },
+    {
+      "name": "CHAT_RATE_LIMITER",
+      "namespace_id": "1001003",
+      "simple": { "limit": 10, "period": 60 }
     }
   ],
   "env": {
@@ -64,6 +70,7 @@
         "APP_ENV": "staging",
         "BETTER_AUTH_URL": "https://staging.example.com",
         "OPENAI_TEXT_MODEL": "gpt-5.6-sol",
+        "OPENAI_CHAT_MODEL": "gpt-5.6-luna",
         "OPENAI_IMAGE_MODEL": "gpt-image-2",
         "OPENAI_TEXT_REASONING_EFFORT": "low",
         "DEFAULT_GENERATION_CARD_COUNT": "30",
@@ -82,7 +89,8 @@
       ],
       "ratelimits": [
         { "name": "GENERATION_RATE_LIMITER", "namespace_id": "1002001", "simple": { "limit": 2, "period": 60 } },
-        { "name": "CREDENTIAL_RATE_LIMITER", "namespace_id": "1002002", "simple": { "limit": 5, "period": 60 } }
+        { "name": "CREDENTIAL_RATE_LIMITER", "namespace_id": "1002002", "simple": { "limit": 5, "period": 60 } },
+        { "name": "CHAT_RATE_LIMITER", "namespace_id": "1002003", "simple": { "limit": 10, "period": 60 } }
       ]
     },
     "production": {
@@ -91,6 +99,7 @@
         "APP_ENV": "production",
         "BETTER_AUTH_URL": "https://learn.example.com",
         "OPENAI_TEXT_MODEL": "gpt-5.6-sol",
+        "OPENAI_CHAT_MODEL": "gpt-5.6-luna",
         "OPENAI_IMAGE_MODEL": "gpt-image-2",
         "OPENAI_TEXT_REASONING_EFFORT": "low",
         "DEFAULT_GENERATION_CARD_COUNT": "30",
@@ -109,7 +118,8 @@
       ],
       "ratelimits": [
         { "name": "GENERATION_RATE_LIMITER", "namespace_id": "1003001", "simple": { "limit": 2, "period": 60 } },
-        { "name": "CREDENTIAL_RATE_LIMITER", "namespace_id": "1003002", "simple": { "limit": 5, "period": 60 } }
+        { "name": "CREDENTIAL_RATE_LIMITER", "namespace_id": "1003002", "simple": { "limit": 5, "period": 60 } },
+        { "name": "CHAT_RATE_LIMITER", "namespace_id": "1003003", "simple": { "limit": 10, "period": 60 } }
       ]
     }
   }

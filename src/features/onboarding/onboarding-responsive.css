@@ -1,0 +1,149 @@
+@keyframes onboarding-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-xs));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .onboarding-rail button:hover:not(:disabled) {
+    color: var(--color-indigo-dark);
+    background: var(--color-surface-translucent);
+  }
+}
+
+.onboarding-rail button:active:not(:disabled) {
+  color: var(--color-indigo-dark);
+  background: var(--color-indigo-soft);
+  border-color: var(--color-indigo-line);
+}
+
+@media (min-width: 40rem) {
+  .onboarding-content {
+    --onboarding-stage-inline: var(--space-xl);
+  }
+
+  .onboarding-field-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .onboarding-review > div {
+    grid-template-columns: minmax(8rem, 0.35fr) minmax(0, 0.65fr);
+    align-items: baseline;
+    gap: var(--space-md);
+  }
+
+  .onboarding-error {
+    margin-inline: var(--onboarding-stage-inline);
+  }
+
+  .onboarding-actions > p {
+    display: block;
+  }
+}
+
+@media (min-width: 60rem) {
+  .onboarding-layout {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+  }
+
+  .onboarding-rail {
+    min-height: calc(100svh - 4.5rem);
+    align-content: start;
+    padding: clamp(var(--space-lg), 4vw, var(--space-2xl));
+    border-right: var(--rule-thin) solid var(--color-line);
+    border-bottom: 0;
+  }
+
+  .onboarding-rail > div:first-child {
+    display: block;
+  }
+
+  .onboarding-rail > div:first-child h2 {
+    max-width: 16ch;
+    margin: 0;
+    font-size: clamp(1.75rem, 3vw, 2.6rem);
+  }
+
+  .onboarding-rail ol {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: var(--space-lg);
+  }
+
+  .onboarding-rail button {
+    min-height: 3.5rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    justify-items: start;
+    gap: var(--space-xs);
+    padding: var(--space-2xs) var(--space-xs);
+  }
+
+  .onboarding-stage-label {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .onboarding-rail > footer {
+    display: grid;
+    gap: var(--space-sm);
+    align-self: end;
+    margin-top: var(--space-2xl);
+  }
+
+  .onboarding-rail > footer p {
+    max-width: 15ch;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 3rem);
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  .onboarding-rail > footer span {
+    padding-top: var(--space-sm);
+    overflow: hidden;
+    color: var(--color-ink-soft);
+    border-top: var(--rule-thin) solid var(--color-line);
+    font-size: var(--text-sm);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .onboarding-content {
+    --onboarding-stage-block-start: clamp(var(--space-xl), 6vw, var(--space-3xl));
+    --onboarding-stage-inline: clamp(var(--space-xl), 7vw, var(--space-3xl));
+    --onboarding-action-offset: calc(var(--space-3xl) + var(--space-sm));
+  }
+
+  .onboarding-stage {
+    min-height: calc(100svh - 4.5rem);
+    align-content: center;
+  }
+
+  .onboarding-stage--welcome {
+    align-content: center;
+  }
+
+  .onboarding-error {
+    margin-inline: var(--onboarding-stage-inline);
+  }
+}
+
+@media (pointer: coarse) {
+  .onboarding-rail button,
+  .onboarding-actions .button {
+    min-height: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-stage-wrap {
+    animation-name: none;
+  }
+}

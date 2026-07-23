@@ -2,11 +2,11 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test("public shell remains readable from 320px through tablet", async ({ page }) => {
+  await page.goto("/");
   for (const width of [320, 375, 414, 768]) {
     await page.setViewportSize({ width, height: width === 768 ? 900 : 780 });
-    await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("One good question");
-    await expect(page.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
+    await expect(page.getByRole("group", { name: "Account action" }).getByRole("button", { name: "Sign in" })).toBeEnabled();
     await expect(page.getByLabel("Username")).toBeVisible();
     const widths = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
@@ -23,7 +23,10 @@ test("account creation exposes invite-gated username and password fields", async
   await page.getByRole("button", { name: "Create account", exact: true }).click();
   await expect(page.getByLabel("Invite email")).toBeVisible();
   await expect(page.getByLabel("Invite code")).toBeVisible();
-  await expect(page.getByLabel("Username")).toHaveAttribute("autocomplete", "username");
+  const username = page.getByLabel("Username");
+  await expect(username).toHaveAttribute("autocomplete", "username");
+  await username.fill("learner@example.com");
+  expect(await username.evaluate((input: HTMLInputElement) => input.checkValidity())).toBe(true);
   await expect(page.getByLabel("Password")).toHaveAttribute("autocomplete", "new-password");
 });
 

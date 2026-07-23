@@ -5,6 +5,7 @@ import { defineConfig, type Plugin } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 const applyToClient: NonNullable<Plugin["applyToEnvironment"]> = (environment) => environment.name === "client";
+const developmentPwaEnabled = process.env.VITE_ENABLE_PWA_DEV === "true";
 
 const pwaPlugins = VitePWA({
   strategies: "injectManifest",
@@ -26,7 +27,7 @@ const pwaPlugins = VitePWA({
   injectManifest: {
     globPatterns: ["**/*.{js,css,html,svg,woff2}"]
   },
-  devOptions: { enabled: true, type: "module" }
+  devOptions: { enabled: developmentPwaEnabled, type: "module" }
 }).map((plugin) => ({
   ...plugin,
   // Vite's Environment API otherwise shares the PWA plugin state with the SSR build,

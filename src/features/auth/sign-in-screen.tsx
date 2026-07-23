@@ -1,5 +1,5 @@
 import { ArrowRight, Check, KeyRound, Sparkles, UserPlus } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { authClient } from "./auth-client";
 
 type AuthMode = "sign-in" | "register";
@@ -11,8 +11,11 @@ const authErrorMessage = (mode: AuthMode): string => {
 
 export function SignInScreen() {
   const [mode, setMode] = useState<AuthMode>("sign-in");
+  const [hydrated, setHydrated] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => setHydrated(true), []);
 
   const selectMode = (nextMode: AuthMode) => {
     setMode(nextMode);
@@ -71,10 +74,15 @@ export function SignInScreen() {
           <div className="auth-panel">
             <fieldset className="auth-mode">
               <legend className="visually-hidden">Account action</legend>
-              <button type="button" aria-pressed={mode === "sign-in"} onClick={() => selectMode("sign-in")}>
+              <button type="button" aria-pressed={mode === "sign-in"} onClick={() => selectMode("sign-in")} disabled={!hydrated || pending}>
                 <KeyRound aria-hidden /> Sign in
               </button>
-              <button type="button" aria-pressed={mode === "register"} onClick={() => selectMode("register")}>
+              <button
+                type="button"
+                aria-pressed={mode === "register"}
+                onClick={() => selectMode("register")}
+                disabled={!hydrated || pending}
+              >
                 <UserPlus aria-hidden /> Create account
               </button>
             </fieldset>
@@ -84,11 +92,11 @@ export function SignInScreen() {
                 <>
                   <label>
                     Invite email
-                    <input name="email" type="email" autoComplete="email" required disabled={pending} />
+                    <input name="email" type="email" autoComplete="email" required disabled={!hydrated || pending} />
                   </label>
                   <label>
                     Invite code
-                    <input name="inviteCode" type="text" autoComplete="one-time-code" required disabled={pending} />
+                    <input name="inviteCode" type="text" autoComplete="one-time-code" required disabled={!hydrated || pending} />
                   </label>
                 </>
               )}
@@ -99,13 +107,17 @@ export function SignInScreen() {
                   type="text"
                   autoComplete="username"
                   minLength={3}
-                  maxLength={30}
-                  pattern="[A-Za-z0-9_.-]+"
+                  maxLength={120}
+                  pattern="[A-Za-z0-9_.@+-]+"
                   required
-                  disabled={pending}
+                  disabled={!hydrated || pending}
                   aria-describedby={mode === "register" ? "username-help" : undefined}
                 />
-                {mode === "register" && <span id="username-help">3–30 letters, numbers, dots, dashes, or underscores.</span>}
+                {mode === "register" && (
+                  <span id="username-help">
+                    3–120 characters. An email address is fine, or use letters, numbers, dots, dashes, and underscores.
+                  </span>
+                )}
               </label>
               <label>
                 Password
@@ -116,7 +128,7 @@ export function SignInScreen() {
                   minLength={12}
                   maxLength={128}
                   required
-                  disabled={pending}
+                  disabled={!hydrated || pending}
                 />
                 {mode === "register" && <span>Use at least 12 characters.</span>}
               </label>
@@ -125,7 +137,7 @@ export function SignInScreen() {
                   {error}
                 </p>
               )}
-              <button type="submit" className="button button--primary button--large" disabled={pending}>
+              <button type="submit" className="button button--primary button--large" disabled={!hydrated || pending}>
                 {pending ? "Working…" : mode === "sign-in" ? "Sign in" : "Create account"} <ArrowRight aria-hidden />
               </button>
             </form>

@@ -20,6 +20,7 @@ export function buildCardGenerationPrompt(topic: TopicPromptContext): string {
     "Do not place the answer, a close synonym, or answer text in the question or image prompt.",
     "For exact guitar fretboard or chord visuals use kind=diagram and the typed guitarDiagram fields.",
     "For a useful illustrative mnemonic use kind=illustration and a prompt with no words or labels.",
+    "Use no more than 6 diagram or illustration cards in total; all remaining cards must use kind=text.",
     "Use kind=text when an image would add decoration rather than learning value.",
     "candidateId must be stable within this response (c1, c2, ...). Every nullable field must be present."
   ].join("\n");

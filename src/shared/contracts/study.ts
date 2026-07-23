@@ -34,6 +34,7 @@ export type StudyCard = {
   hint: string;
   explanation: string;
   assetId: string | null;
+  version: number;
   dueAt: string | null;
   state: number | null;
 };

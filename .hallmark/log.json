@@ -1,5 +1,34 @@
 [
   {
+    "date": "2026-07-24",
+    "macrostructure": "Index-First + Workbench aside",
+    "theme": "Plume",
+    "enrichment": "none",
+    "brief": "Lorne card-aware AI chat and saved history",
+    "scope": "authenticated-application",
+    "nav": "N7 fixed work rail",
+    "footer": "none — app shell"
+  },
+  {
+    "date": "2026-07-23",
+    "macrostructure": "Narrative Workflow",
+    "theme": "Plume",
+    "enrichment": "none",
+    "brief": "Lorne first-login onboarding wizard",
+    "scope": "authenticated-application",
+    "nav": "N1 minimal wordmark and sign-out",
+    "footer": "Ft5 closing statement"
+  },
+  {
+    "date": "2026-07-23",
+    "macrostructure": "Poster (study) / Workbench (topics, settings) / Ledger (progress)",
+    "theme": "custom Card Garden",
+    "theme_axes": "light / roman-serif / warm-marigold+chromatic-green",
+    "enrichment": "none — typography and object language",
+    "brief": "Lorne redesign proposal (artifact only, not applied)",
+    "scope": "proposal-artifact"
+  },
+  {
     "date": "2026-07-23",
     "macrostructure": "Workbench",
     "theme": "Plume",

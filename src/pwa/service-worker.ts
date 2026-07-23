@@ -21,7 +21,7 @@ registerRoute(
 );
 
 registerRoute(
-  ({ request, url }) => request.mode === "navigate" && url.origin === self.location.origin,
+  ({ request, url }) => request.mode === "navigate" && url.origin === self.location.origin && !url.pathname.startsWith("/chats"),
   new NetworkFirst({
     cacheName: "lorne-private-pages-v1",
     networkTimeoutSeconds: 3,

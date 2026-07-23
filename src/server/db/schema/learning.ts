@@ -20,6 +20,8 @@ export const userPreferences = sqliteTable("user_preferences", {
   timezone: text("timezone").notNull().default("Pacific/Auckland"),
   dailyGoal: integer("daily_goal").notNull().default(10),
   textCardPercent: integer("text_card_percent").notNull().default(70),
+  onboardingStep: integer("onboarding_step").notNull().default(0),
+  onboardingCompletedAt: integer("onboarding_completed_at", { mode: "timestamp_ms" }),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull()
 });
 

@@ -13,9 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TopicsRouteImport } from './routes/topics'
+import { Route as ChatsIndexRouteImport } from './routes/chats/index'
+import { Route as ChatsThreadIdRouteImport } from './routes/chats/$threadId'
 import { Route as ApiAssetsAssetIdRouteImport } from './routes/api/assets/$assetId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiReviewsSyncRouteImport } from './routes/api/reviews/sync'
+import { Route as ApiCardChatsThreadIdStreamRouteImport } from './routes/api/card-chats/$threadId/stream'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -37,6 +40,16 @@ const TopicsRoute = TopicsRouteImport.update({
   path: '/topics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatsIndexRoute = ChatsIndexRouteImport.update({
+  id: '/chats/',
+  path: '/chats/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatsThreadIdRoute = ChatsThreadIdRouteImport.update({
+  id: '/chats/$threadId',
+  path: '/chats/$threadId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAssetsAssetIdRoute = ApiAssetsAssetIdRouteImport.update({
   id: '/api/assets/$assetId',
   path: '/api/assets/$assetId',
@@ -52,24 +65,36 @@ const ApiReviewsSyncRoute = ApiReviewsSyncRouteImport.update({
   path: '/api/reviews/sync',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCardChatsThreadIdStreamRoute =
+  ApiCardChatsThreadIdStreamRouteImport.update({
+    id: '/api/card-chats/$threadId/stream',
+    path: '/api/card-chats/$threadId/stream',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/progress': typeof ProgressRoute
   '/settings': typeof SettingsRoute
   '/topics': typeof TopicsRoute
+  '/chats/$threadId': typeof ChatsThreadIdRoute
+  '/chats/': typeof ChatsIndexRoute
   '/api/assets/$assetId': typeof ApiAssetsAssetIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/reviews/sync': typeof ApiReviewsSyncRoute
+  '/api/card-chats/$threadId/stream': typeof ApiCardChatsThreadIdStreamRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/progress': typeof ProgressRoute
   '/settings': typeof SettingsRoute
   '/topics': typeof TopicsRoute
+  '/chats/$threadId': typeof ChatsThreadIdRoute
+  '/chats': typeof ChatsIndexRoute
   '/api/assets/$assetId': typeof ApiAssetsAssetIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/reviews/sync': typeof ApiReviewsSyncRoute
+  '/api/card-chats/$threadId/stream': typeof ApiCardChatsThreadIdStreamRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +102,12 @@ export interface FileRoutesById {
   '/progress': typeof ProgressRoute
   '/settings': typeof SettingsRoute
   '/topics': typeof TopicsRoute
+  '/chats/$threadId': typeof ChatsThreadIdRoute
+  '/chats/': typeof ChatsIndexRoute
   '/api/assets/$assetId': typeof ApiAssetsAssetIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/reviews/sync': typeof ApiReviewsSyncRoute
+  '/api/card-chats/$threadId/stream': typeof ApiCardChatsThreadIdStreamRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,27 +116,36 @@ export interface FileRouteTypes {
     | '/progress'
     | '/settings'
     | '/topics'
+    | '/chats/$threadId'
+    | '/chats/'
     | '/api/assets/$assetId'
     | '/api/auth/$'
     | '/api/reviews/sync'
+    | '/api/card-chats/$threadId/stream'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/progress'
     | '/settings'
     | '/topics'
+    | '/chats/$threadId'
+    | '/chats'
     | '/api/assets/$assetId'
     | '/api/auth/$'
     | '/api/reviews/sync'
+    | '/api/card-chats/$threadId/stream'
   id:
     | '__root__'
     | '/'
     | '/progress'
     | '/settings'
     | '/topics'
+    | '/chats/$threadId'
+    | '/chats/'
     | '/api/assets/$assetId'
     | '/api/auth/$'
     | '/api/reviews/sync'
+    | '/api/card-chats/$threadId/stream'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -116,9 +153,12 @@ export interface RootRouteChildren {
   ProgressRoute: typeof ProgressRoute
   SettingsRoute: typeof SettingsRoute
   TopicsRoute: typeof TopicsRoute
+  ChatsThreadIdRoute: typeof ChatsThreadIdRoute
+  ChatsIndexRoute: typeof ChatsIndexRoute
   ApiAssetsAssetIdRoute: typeof ApiAssetsAssetIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiReviewsSyncRoute: typeof ApiReviewsSyncRoute
+  ApiCardChatsThreadIdStreamRoute: typeof ApiCardChatsThreadIdStreamRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -151,6 +191,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TopicsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chats/': {
+      id: '/chats/'
+      path: '/chats'
+      fullPath: '/chats/'
+      preLoaderRoute: typeof ChatsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chats/$threadId': {
+      id: '/chats/$threadId'
+      path: '/chats/$threadId'
+      fullPath: '/chats/$threadId'
+      preLoaderRoute: typeof ChatsThreadIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/assets/$assetId': {
       id: '/api/assets/$assetId'
       path: '/api/assets/$assetId'
@@ -172,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReviewsSyncRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/card-chats/$threadId/stream': {
+      id: '/api/card-chats/$threadId/stream'
+      path: '/api/card-chats/$threadId/stream'
+      fullPath: '/api/card-chats/$threadId/stream'
+      preLoaderRoute: typeof ApiCardChatsThreadIdStreamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -180,9 +241,12 @@ const rootRouteChildren: RootRouteChildren = {
   ProgressRoute: ProgressRoute,
   SettingsRoute: SettingsRoute,
   TopicsRoute: TopicsRoute,
+  ChatsThreadIdRoute: ChatsThreadIdRoute,
+  ChatsIndexRoute: ChatsIndexRoute,
   ApiAssetsAssetIdRoute: ApiAssetsAssetIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiReviewsSyncRoute: ApiReviewsSyncRoute,
+  ApiCardChatsThreadIdStreamRoute: ApiCardChatsThreadIdStreamRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

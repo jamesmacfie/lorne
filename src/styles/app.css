@@ -1056,6 +1056,22 @@ select:disabled {
   padding-block: var(--space-sm);
   border-top: var(--rule-thin) solid var(--color-line);
 }
+.card-asset-warning {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin: 0;
+  padding: var(--space-xs);
+  color: var(--color-amber);
+  background: var(--color-amber-soft);
+  border-radius: var(--radius-small);
+}
+.card-asset-warning svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+}
 
 .progress-hero {
   display: flex;
@@ -1299,7 +1315,7 @@ select:disabled {
   }
   .app-rail nav {
     width: 100%;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: var(--space-3xs);
     margin: 0;
   }

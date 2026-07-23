@@ -6,11 +6,17 @@
   "motion": "Transform and opacity transitions only, with a complete reduced-motion cut",
   "spacing": "Named 4-point semantic spacing scale",
   "framework": "TanStack Start, React, and Cloudflare Workers",
-  "preserved": ["Mobile-first Quick Study path", "Four explicit FSRS recall controls", "Private authenticated application shell"],
+  "slop_test": "pass (1–69)",
+  "preserved": [
+    "Bricolage Grotesque and Geist font pairing",
+    "Warm-paper Plume token palette and 4-point spacing scale",
+    "Mobile-first Quick Study path",
+    "Private authenticated application shell"
+  ],
   "introduced": [
-    "Workbench split sign-in macrostructure",
-    "Live flashcard proof on the sign-in screen",
-    "Fixed study rail with mobile bottom navigation",
-    "Tactile asymmetric card geometry"
+    "Narrative Workflow first-login onboarding",
+    "Resumable server-owned setup checkpoints",
+    "Persistent mobile-safe onboarding action rail",
+    "Verified readiness review before shell access"
   ]
 }

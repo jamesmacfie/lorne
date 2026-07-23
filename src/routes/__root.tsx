@@ -4,9 +4,13 @@ import bricolageCss from "@fontsource-variable/bricolage-grotesque/index.css?url
 import geistCss from "@fontsource-variable/geist/index.css?url";
 import tokensCss from "../../tokens.css?url";
 import appCss from "../styles/app.css?url";
+import onboardingCss from "../features/onboarding/onboarding.css?url";
+import onboardingResponsiveCss from "../features/onboarding/onboarding-responsive.css?url";
+import chatCss from "../features/chat/chat.css?url";
 import { getViewerFn } from "#/server/functions/app-functions";
 import { AppShell } from "#/features/app/app-shell";
 import { SignInScreen } from "#/features/auth/sign-in-screen";
+import { OnboardingScreen } from "#/features/onboarding/onboarding-screen";
 import { registerLorneServiceWorker } from "#/pwa/register";
 
 export const Route = createRootRoute({
@@ -24,6 +28,9 @@ export const Route = createRootRoute({
       { rel: "stylesheet", href: geistCss },
       { rel: "stylesheet", href: tokensCss },
       { rel: "stylesheet", href: appCss },
+      { rel: "stylesheet", href: onboardingCss },
+      { rel: "stylesheet", href: onboardingResponsiveCss },
+      { rel: "stylesheet", href: chatCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "icon", href: "/icon.svg", type: "image/svg+xml" }
     ]
@@ -54,6 +61,7 @@ function RootComponent() {
   const viewer = Route.useLoaderData();
   const [updateReady, setUpdateReady] = useState(false);
   useEffect(() => registerLorneServiceWorker(() => setUpdateReady(true)), []);
+  if (viewer?.onboardingRequired) return <OnboardingScreen viewer={viewer} updateReady={updateReady} />;
   return viewer ? (
     <AppShell viewer={viewer} updateReady={updateReady}>
       <Outlet />

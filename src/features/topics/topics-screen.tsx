@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Archive, ChevronDown, CirclePlus, Image, Layers3, Pencil, Trash2 } from "lucide-react";
+import { Archive, ChevronDown, CirclePlus, Image, ImageOff, Layers3, Pencil, Trash2 } from "lucide-react";
 import { createSortableId } from "#/shared/ids";
 import {
   archiveTopicFn,
@@ -260,7 +260,12 @@ export function TopicsScreen() {
                         type="button"
                         className="text-button text-button--danger"
                         onClick={async () => {
-                          if (!window.confirm(`Delete “${topic.title}” and its cards? Review history will also be removed.`)) return;
+                          if (
+                            !window.confirm(
+                              `Delete “${topic.title}”, its cards, saved card chats, and review history? This cannot be undone.`
+                            )
+                          )
+                            return;
                           await deleteTopicFn({ data: { id: topic.id } });
                           await result.refresh();
                         }}
@@ -291,7 +296,7 @@ export function TopicsScreen() {
                 onSubmit={async (event) => {
                   event.preventDefault();
                   const values = new FormData(event.currentTarget);
-                  await updateCardFn({
+                  const response = await updateCardFn({
                     data: {
                       id: card.id,
                       front: String(values.get("front")),
@@ -301,9 +306,15 @@ export function TopicsScreen() {
                       status: String(values.get("status")) as "published" | "archived" | "flagged"
                     }
                   });
-                  setNotice("Card saved.");
+                  setNotice(response.ok ? "Card saved." : response.message);
                 }}
               >
+                {card.kind === "image" && !card.assetId && (
+                  <p className="card-asset-warning">
+                    <ImageOff aria-hidden /> This image was not retained. The card is held out of study; generate another batch to replace
+                    it.
+                  </p>
+                )}
                 <label>
                   Question
                   <textarea name="front" defaultValue={card.front} required />
@@ -322,9 +333,11 @@ export function TopicsScreen() {
                 </label>
                 <div className="field-row">
                   <select name="status" defaultValue={card.status}>
-                    <option value="published">Published</option>
+                    <option value="published" disabled={card.kind === "image" && !card.assetId}>
+                      Published
+                    </option>
                     <option value="archived">Archived</option>
-                    <option value="flagged">Flagged</option>
+                    <option value="flagged">{card.kind === "image" && !card.assetId ? "Needs image" : "Flagged"}</option>
                   </select>
                   <button type="submit" className="button button--secondary">
                     Save card

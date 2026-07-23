@@ -14,7 +14,7 @@ export function isTrustedMutationOrigin(request: Request, canonicalOrigin: strin
   }
 }
 
-export function addSecurityHeaders(response: Response, production: boolean): Response {
+export function addSecurityHeaders(response: Response, production: boolean, noStore = false): Response {
   const headers = new Headers(response.headers);
   headers.set(
     "Content-Security-Policy",
@@ -34,6 +34,7 @@ export function addSecurityHeaders(response: Response, production: boolean): Res
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("X-Frame-Options", "DENY");
+  if (noStore) headers.set("Cache-Control", "no-store");
   if (production) headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }

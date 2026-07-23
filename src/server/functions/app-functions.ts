@@ -23,6 +23,7 @@ import {
   deleteTopic,
   listTopicCards,
   listTopics,
+  TopicDomainError,
   updateCard,
   updateTopic
 } from "#/server/topics/topic-service";
@@ -32,12 +33,18 @@ import { credentialSummary, deleteCredential, saveCredential } from "#/server/cr
 import { getDb } from "#/server/db/client";
 import { userPreferences } from "#/server/db/schema";
 import { GenerationStartError, listGenerationJobs, startGeneration } from "#/server/generation/generation-service";
+import { isOnboardingRequired } from "#/server/onboarding/onboarding-service";
 
 export const getViewerFn = createServerFn({ method: "GET" }).handler(async () => {
   const session = await getSession(getRequest());
-  return session?.user
-    ? { id: session.user.id, name: session.user.name, email: session.user.email, image: session.user.image ?? null }
-    : null;
+  if (!session?.user) return null;
+  return {
+    id: session.user.id,
+    name: session.user.name,
+    email: session.user.email,
+    image: session.user.image ?? null,
+    onboardingRequired: await isOnboardingRequired(session.user.id)
+  };
 });
 
 export const getStudyDataFn = createServerFn({ method: "GET" })
@@ -110,8 +117,15 @@ const cardUpdateSchema = z.object({
 export const updateCardFn = createServerFn({ method: "POST" })
   .validator(cardUpdateSchema)
   .handler(async ({ data }) => {
-    const user = await serverUser({ mutation: true });
-    return success(await updateCard(user.id, data));
+    try {
+      const user = await serverUser({ mutation: true });
+      return success(await updateCard(user.id, data));
+    } catch (error) {
+      if (error instanceof TopicDomainError && error.code === "INVALID_CARD_STATE") {
+        return failure("INVALID_INPUT", "This visual card needs an image before it can be published.");
+      }
+      return failure("INVALID_INPUT", "That card could not be saved.");
+    }
   });
 
 export const startGenerationFn = createServerFn({ method: "POST" })
@@ -157,6 +171,9 @@ export const saveCredentialFn = createServerFn({ method: "POST" })
       if (!rate.success) return failure("RATE_LIMITED", "Too many credential checks. Try again in a minute.");
       const result = await saveCredential(user.id, data.apiKey);
       if (!result.saved) return failure("CREDENTIAL_INVALID", "OpenAI rejected this key.");
+      if (result.status === "limited") {
+        return failure("CREDENTIAL_LIMITED", "This key cannot read the configured model. Update its project access and try again.");
+      }
       return success(result);
     } catch {
       return failure("INTERNAL_ERROR", "The key could not be validated right now.");

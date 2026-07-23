@@ -1,6 +1,7 @@
 import { and, eq, gte, sql } from "drizzle-orm";
 import { getDb } from "#/server/db/client";
-import { cardSchedules, cards, dailyProgress, reviewEvents, topics, userPreferences } from "#/server/db/schema";
+import { cards, dailyProgress, reviewEvents, topics, userPreferences } from "#/server/db/schema";
+import { buildCardCountsQuery } from "./progress-query";
 
 function formatLocalDate(date: Date, timezone: string): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
@@ -49,16 +50,7 @@ export async function getProgress(userId: string) {
     .from(reviewEvents)
     .where(and(eq(reviewEvents.userId, userId), gte(reviewEvents.reviewedAt, thirtyDaysAgo)));
 
-  const [counts] = await db
-    .select({
-      newCount: sql<number>`sum(case when ${cardSchedules.cardId} is null then 1 else 0 end)`,
-      learningCount: sql<number>`sum(case when ${cardSchedules.state} in (1, 3) then 1 else 0 end)`,
-      matureCount: sql<number>`sum(case when ${cardSchedules.state} = 2 and ${cardSchedules.stability} >= 21 then 1 else 0 end)`,
-      dueTomorrow: sql<number>`sum(case when ${cardSchedules.dueAt} > ${now} and ${cardSchedules.dueAt} <= ${tomorrowEnd} then 1 else 0 end)`
-    })
-    .from(cards)
-    .leftJoin(cardSchedules, and(eq(cardSchedules.cardId, cards.id), eq(cardSchedules.userId, userId)))
-    .where(and(eq(cards.userId, userId), eq(cards.status, "published")));
+  const [counts] = await buildCardCountsQuery(db, userId, now, tomorrowEnd);
 
   const byTopic = await db
     .select({

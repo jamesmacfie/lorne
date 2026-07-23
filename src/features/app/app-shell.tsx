@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
-import { BarChart3, BookOpenText, LogOut, Settings, Shapes } from "lucide-react";
+import { BarChart3, BookOpenText, LogOut, MessageCircleQuestion, Settings, Shapes } from "lucide-react";
 import { authClient } from "#/features/auth/auth-client";
 import { clearPrivateOfflineData, syncReviewOutbox } from "#/pwa/review-outbox";
 
-export type Viewer = { id: string; name: string; email: string; image: string | null };
+export type Viewer = { id: string; name: string; email: string; image: string | null; onboardingRequired: boolean };
 
 export function AppShell({ viewer, children, updateReady }: { viewer: Viewer; children: React.ReactNode; updateReady: boolean }) {
   const router = useRouter();
@@ -64,6 +64,10 @@ export function AppShell({ viewer, children, updateReady }: { viewer: Viewer; ch
           <Link to="/progress" activeProps={{ "aria-current": "page" }}>
             <BarChart3 aria-hidden />
             <span>Progress</span>
+          </Link>
+          <Link to="/chats" activeProps={{ "aria-current": "page" }}>
+            <MessageCircleQuestion aria-hidden />
+            <span>Chats</span>
           </Link>
           <Link to="/settings" activeProps={{ "aria-current": "page" }}>
             <Settings aria-hidden />

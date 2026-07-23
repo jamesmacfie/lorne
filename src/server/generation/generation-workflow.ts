@@ -1,35 +1,20 @@
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from "cloudflare:workers";
 import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "#/server/db/client";
-import { cardAssets, cards, generationJobs, topics } from "#/server/db/schema";
+import { cardAssets, cards, generationJobs } from "#/server/db/schema";
 import { cardFingerprint, validateGeneratedCard } from "#/server/domain/cards";
 import { createId, sha256Hex } from "#/shared/ids";
 import type { GeneratedCard, TopicDifficulty, VisualMix } from "#/shared/contracts";
-import { AmbiguousProviderCallError } from "#/server/ai/provider-ledger";
+import { AmbiguousProviderCallError, isAmbiguousProviderCallError } from "#/server/ai/provider-ledger";
 import { applyVerification } from "#/server/ai/prompts";
 import { generateCardCandidates, generateIllustration, ProviderResponseError, verifyCardCandidates } from "#/server/ai/openai-client";
 import { renderGuitarDiagram } from "#/server/ai/guitar-diagram";
 import { CredentialUnavailableError } from "#/server/crypto/credential-service";
 import { logEvent } from "#/server/observability/log";
+import { getOwnedTopicContext } from "#/server/topics/topic-context";
+import { bytesToWorkflowStream, limitVisualCards } from "./visual-card-policy";
 
 export type CardGenerationParams = { jobId: string; userId: string; topicId: string };
-
-async function topicPromptContext(userId: string, topicId: string) {
-  const db = getDb();
-  const owned = await db.select().from(topics).where(eq(topics.userId, userId));
-  const byId = new Map(owned.map((topic) => [topic.id, topic]));
-  const topic = byId.get(topicId);
-  if (!topic) throw new Error("Topic not found.");
-  const path: string[] = [];
-  let cursor: typeof topic | undefined = topic;
-  const visited = new Set<string>();
-  while (cursor && !visited.has(cursor.id)) {
-    visited.add(cursor.id);
-    path.unshift(cursor.title);
-    cursor = cursor.parentTopicId ? byId.get(cursor.parentTopicId) : undefined;
-  }
-  return { topic, path };
-}
 
 function safeFailure(error: unknown): { status: "failed" | "action_required"; code: string } {
   if (error instanceof AmbiguousProviderCallError) return { status: "action_required", code: "PROVIDER_AMBIGUOUS" };
@@ -55,7 +40,9 @@ export class CardGenerationWorkflow extends WorkflowEntrypoint<Env, CardGenerati
     const db = getDb();
     try {
       const context = await step.do("load-topic", async () => {
-        const { topic, path } = await topicPromptContext(userId, topicId);
+        const topicContext = await getOwnedTopicContext(userId, topicId);
+        if (!topicContext) throw new Error("Topic not found.");
+        const { topic, path } = topicContext;
         const [job] = await db
           .select()
           .from(generationJobs)
@@ -80,8 +67,9 @@ export class CardGenerationWorkflow extends WorkflowEntrypoint<Env, CardGenerati
       const verified = applyVerification(generated, verification);
 
       const persisted = await step.do("validate-and-persist", async () => {
+        const limited = limitVisualCards(verified.cards);
         const candidates = await Promise.all(
-          verified.cards.map(async (card) => ({ card, fingerprint: await cardFingerprint(card.question, card.answer) }))
+          limited.cards.map(async (card) => ({ card, fingerprint: await cardFingerprint(card.question, card.answer) }))
         );
         const existing = candidates.length
           ? await db
@@ -100,7 +88,7 @@ export class CardGenerationWorkflow extends WorkflowEntrypoint<Env, CardGenerati
         const existingSet = new Set(existing.map((card) => card.fingerprint));
         const now = new Date();
         const accepted: Array<{ id: string; card: GeneratedCard }> = [];
-        let rejected = generated.cards.length - verified.cards.length;
+        let rejected = generated.cards.length - verified.cards.length + limited.rejectedVisualCount;
         for (const { card, fingerprint } of candidates) {
           if (existingSet.has(fingerprint) || validateGeneratedCard(card).length > 0) {
             rejected += 1;
@@ -123,7 +111,7 @@ export class CardGenerationWorkflow extends WorkflowEntrypoint<Env, CardGenerati
               tagsJson: JSON.stringify(card.tags),
               fingerprint,
               source: "generated",
-              status: "published",
+              status: card.kind === "text" ? "published" : "flagged",
               version: 1,
               createdAt: now,
               updatedAt: now
@@ -141,19 +129,22 @@ export class CardGenerationWorkflow extends WorkflowEntrypoint<Env, CardGenerati
 
       let imageCount = 0;
       let imageFailures = 0;
-      const visualCards = persisted.accepted.filter((item) => item.card.kind !== "text").slice(0, 6);
+      const visualCards = persisted.accepted.filter((item) => item.card.kind !== "text");
       for (const item of visualCards) {
         try {
           const illustrationPrompt = item.card.illustrationPrompt;
-          const illustrationBase64 =
+          const illustrationStream =
             item.card.kind === "illustration" && illustrationPrompt
-              ? await step.do(`generate-image-${item.card.candidateId}`, async () => {
-                  const bytes = await generateIllustration(jobId, `image-${item.card.candidateId}`, userId, illustrationPrompt);
-                  let binary = "";
-                  for (const byte of bytes) binary += String.fromCharCode(byte);
-                  return btoa(binary);
-                })
+              ? await step.do(
+                  `generate-image-${item.card.candidateId}`,
+                  { retries: { limit: 0, delay: "1 second" }, timeout: "10 minutes" },
+                  async () => {
+                    const bytes = await generateIllustration(jobId, `image-${item.card.candidateId}`, userId, illustrationPrompt);
+                    return bytesToWorkflowStream(bytes);
+                  }
+                )
               : null;
+          const illustrationBytes = illustrationStream ? new Uint8Array(await new Response(illustrationStream).arrayBuffer()) : null;
           const asset = await step.do(`store-asset-${item.card.candidateId}`, async () => {
             const assetId = `asset_${(await sha256Hex(`${jobId}:${item.id}`)).slice(0, 32)}`;
             const key = `${userId}/${topicId}/${assetId}`;
@@ -168,9 +159,8 @@ export class CardGenerationWorkflow extends WorkflowEntrypoint<Env, CardGenerati
               width = 800;
               height = 800;
               source = "diagram";
-            } else if (illustrationBase64) {
-              const binary = atob(illustrationBase64);
-              body = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+            } else if (illustrationBytes) {
+              body = illustrationBytes;
               mimeType = "image/png";
               width = 1024;
               height = 1024;
@@ -202,13 +192,13 @@ export class CardGenerationWorkflow extends WorkflowEntrypoint<Env, CardGenerati
               });
             await db
               .update(cards)
-              .set({ assetId, updatedAt: new Date() })
+              .set({ assetId, status: "published", updatedAt: new Date() })
               .where(and(eq(cards.id, item.id), eq(cards.userId, userId)));
             return assetId;
           });
           if (asset) imageCount += 1;
         } catch (error) {
-          if (error instanceof AmbiguousProviderCallError) throw error;
+          if (isAmbiguousProviderCallError(error)) throw new AmbiguousProviderCallError();
           imageFailures += 1;
         }
       }

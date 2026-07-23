@@ -7,7 +7,7 @@ import { createId } from "#/shared/ids";
 
 export class TopicDomainError extends Error {
   constructor(
-    public readonly code: "NOT_FOUND" | "FORBIDDEN" | "INVALID_HIERARCHY",
+    public readonly code: "NOT_FOUND" | "FORBIDDEN" | "INVALID_HIERARCHY" | "INVALID_CARD_STATE",
     message: string
   ) {
     super(message);
@@ -101,8 +101,19 @@ export async function updateCard(
     status: "published" | "archived" | "flagged";
   }
 ) {
+  const db = getDb();
+  const [existing] = await db
+    .select({ kind: cards.kind, assetId: cards.assetId })
+    .from(cards)
+    .where(and(eq(cards.id, input.id), eq(cards.userId, userId)))
+    .limit(1);
+  if (!existing) throw new TopicDomainError("NOT_FOUND", "Card not found.");
+  if (input.status === "published" && existing.kind === "image" && !existing.assetId) {
+    throw new TopicDomainError("INVALID_CARD_STATE", "A visual card cannot be published without an image.");
+  }
+
   const fingerprint = await cardFingerprint(input.front, input.back);
-  const [updated] = await getDb()
+  const [updated] = await db
     .update(cards)
     .set({
       front: input.front,

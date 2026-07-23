@@ -3,7 +3,23 @@ import { getDb } from "#/server/db/client";
 import { providerCalls } from "#/server/db/schema";
 import { createId } from "#/shared/ids";
 
-export class AmbiguousProviderCallError extends Error {}
+const ambiguousProviderMessage = "A provider call may already have been billed; manual retry is required.";
+
+export class AmbiguousProviderCallError extends Error {
+  readonly code = "PROVIDER_AMBIGUOUS";
+
+  constructor(message = ambiguousProviderMessage) {
+    super(message);
+    this.name = "AmbiguousProviderCallError";
+  }
+}
+
+export function isAmbiguousProviderCallError(error: unknown): boolean {
+  if (error instanceof AmbiguousProviderCallError) return true;
+  if (!error || typeof error !== "object") return false;
+  const value = error as { code?: unknown; message?: unknown; name?: unknown };
+  return value.code === "PROVIDER_AMBIGUOUS" || value.name === "AmbiguousProviderCallError" || value.message === ambiguousProviderMessage;
+}
 
 export type ProviderOperation = "generate_cards" | "verify_cards" | "generate_image";
 
@@ -32,7 +48,7 @@ export async function beginProviderCall(jobId: string, stepKey: string, operatio
       .update(providerCalls)
       .set({ status: "ambiguous" })
       .where(and(eq(providerCalls.jobId, jobId), eq(providerCalls.stepKey, stepKey), eq(providerCalls.status, "started")));
-    throw new AmbiguousProviderCallError("A provider call may already have been billed; manual retry is required.");
+    throw new AmbiguousProviderCallError();
   }
   return started.id;
 }

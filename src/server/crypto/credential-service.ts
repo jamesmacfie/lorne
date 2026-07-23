@@ -35,7 +35,7 @@ async function validateOpenAiKey(apiKey: string): Promise<{ status: CredentialSt
   if (response.status === 401) return { status: "invalid", capabilities: [] };
   if (response.status === 403 || response.status === 404) return { status: "limited", capabilities: [] };
   if (!response.ok) throw new Error("OpenAI credential validation is temporarily unavailable.");
-  return { status: "verified", capabilities: ["models:read", "responses:write", "images:write"] };
+  return { status: "verified", capabilities: ["models:read"] };
 }
 
 export async function saveCredential(userId: string, apiKey: string) {

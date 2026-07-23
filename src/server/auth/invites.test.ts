@@ -13,8 +13,10 @@ describe("invite credentials", () => {
 
   it("accepts only the supported username alphabet and length", () => {
     expect(isValidUsername("james.mac-fie_1")).toBe(true);
+    expect(isValidUsername("learner@example.com")).toBe(true);
+    expect(isValidUsername("learner+cards@example.com")).toBe(true);
     expect(isValidUsername("ab")).toBe(false);
     expect(isValidUsername("not an account")).toBe(false);
-    expect(isValidUsername("a".repeat(31))).toBe(false);
+    expect(isValidUsername("a".repeat(121))).toBe(false);
   });
 });

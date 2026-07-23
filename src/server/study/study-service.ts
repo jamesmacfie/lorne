@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, isNull, lte, or, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull, isNull, lte, or, sql } from "drizzle-orm";
 import { getDb } from "#/server/db/client";
 import { cardSchedules, cards, dailyProgress, reviewEvents, topics, userPreferences } from "#/server/db/schema";
 import type { ReviewEventInput, ScheduleProjection, StudyCard } from "#/shared/contracts";
@@ -22,7 +22,12 @@ function interleaveByTopic<T extends { topicId: string }>(items: T[], limit: num
 export async function getStudyQueue(userId: string, limit: number, topicIds?: string[]): Promise<StudyCard[]> {
   const db = getDb();
   const now = new Date();
-  const ownerFilters = [eq(cards.userId, userId), eq(cards.status, "published"), eq(topics.status, "active")];
+  const ownerFilters = [
+    eq(cards.userId, userId),
+    eq(cards.status, "published"),
+    eq(topics.status, "active"),
+    or(eq(cards.kind, "text"), isNotNull(cards.assetId))
+  ];
   if (topicIds?.length) ownerFilters.push(inArray(cards.topicId, topicIds));
   const rows = await db
     .select({
@@ -35,6 +40,7 @@ export async function getStudyQueue(userId: string, limit: number, topicIds?: st
       hint: cards.hint,
       explanation: cards.explanation,
       assetId: cards.assetId,
+      version: cards.version,
       dueAt: cardSchedules.dueAt,
       state: cardSchedules.state
     })

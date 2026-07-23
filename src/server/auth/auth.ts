@@ -93,7 +93,7 @@ export function getAuth() {
     plugins: [
       username({
         minUsernameLength: 3,
-        maxUsernameLength: 30,
+        maxUsernameLength: 120,
         usernameValidator: isValidUsername
       }),
       tanstackStartCookies()

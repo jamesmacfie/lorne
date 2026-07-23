@@ -8,8 +8,10 @@ Lorne is a private, mobile-first flashcard PWA for learning in spare moments. It
 - Better Auth username/password sessions with one-time invite-code enforcement before first account creation.
 - D1 and Drizzle for auth, topic/card management, immutable review events, FSRS projections, progress rollups, generation jobs, and provider-call ledgers.
 - User-owned OpenAI keys encrypted with AES-256-GCM and bound AAD; no application-wide OpenAI key.
+- Resumable first-login onboarding that requires a topic, study rhythm, and verified encrypted OpenAI key before opening the app shell.
 - Cloudflare Workflow card generation using `gpt-5.6-sol`, strict Zod Structured Outputs, a second verification pass, deterministic retry protection, and safe job states.
 - Typed local guitar diagram rendering plus `gpt-image-2` illustrations in private R2.
+- Reveal-only, card-aware chat using `gpt-5.6-luna`, Vercel AI SDK streaming, immutable D1 card snapshots, explicit OpenAI context disclosure, and a saved Chats index/detail experience.
 - Offline study queue, IndexedDB outbox, idempotent synchronization, and explicit private-cache clearing on sign-out or account change.
 - Mobile bottom navigation, desktop workbench rail, keyboard ratings, reduced-motion support, and complete loading/empty/error/offline states.
 
@@ -26,6 +28,8 @@ pnpm run db:migrate:local
 pnpm run cf-typegen
 pnpm run dev
 ```
+
+Development mode unregisters old service workers and clears Lorne Cache Storage so Vite never mixes stale PWA assets with a new React module graph. Production builds still include the complete offline worker. The browser suite explicitly opts into the development worker to exercise offline behavior.
 
 Generate local secret values without placing them in shell history:
 

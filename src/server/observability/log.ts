@@ -3,6 +3,7 @@ export type LogContext = {
   jobId?: string;
   userHash?: string;
   state?: string;
+  model?: string;
   durationMs?: number;
   code?: string;
   usage?: Record<string, number>;
