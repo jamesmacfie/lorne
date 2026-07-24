@@ -9,6 +9,14 @@ const authErrorMessage = (mode: AuthMode): string => {
   return "The invite details or account information were not accepted.";
 };
 
+// ponytail: allowlist, not error.message passthrough — surfacing codes like
+// USER_ALREADY_EXISTS would enable account enumeration.
+const surfacedError = (error: { status: number; code?: string; message?: string }, mode: AuthMode): string => {
+  if (error.status === 429) return "Too many attempts. Wait a minute and try again.";
+  if (error.code === "INVALID_INVITE" || error.code === "INVALID_ORIGIN") return error.message ?? authErrorMessage(mode);
+  return authErrorMessage(mode);
+};
+
 export function SignInScreen() {
   const [mode, setMode] = useState<AuthMode>("sign-in");
   const [hydrated, setHydrated] = useState(false);
@@ -47,7 +55,7 @@ export function SignInScreen() {
 
     setPending(false);
     if (result.error) {
-      setError(result.error.message || authErrorMessage(mode));
+      setError(surfacedError(result.error, mode));
       return;
     }
     window.location.replace("/");
