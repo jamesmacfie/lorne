@@ -47,7 +47,7 @@ export function SignInScreen() {
 
     setPending(false);
     if (result.error) {
-      setError(authErrorMessage(mode));
+      setError(result.error.message || authErrorMessage(mode));
       return;
     }
     window.location.replace("/");
